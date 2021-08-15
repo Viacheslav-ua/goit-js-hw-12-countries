@@ -2,8 +2,11 @@ import './css/styles.css'
 import fCountries from './js/fetchCountries'
 import listCountriesTpl from './templates/listCountries.hbs';
 import cardCountryTpl from './templates/cardCountry.hbs';
-// var debounce = require('lodash.debounce');
+
 import debounce from 'lodash.debounce';
+
+import { error } from '@pnotify/core';
+import '@pnotify/core/dist/BrightTheme.css';
 
 const fields = [
   'name',
@@ -22,12 +25,10 @@ refs.searchFiled.addEventListener('input', debounce(onEnterName, 500));
 
 function onEnterName(e) {
   const strName = e.target.value;
-  console.log(strName)
+
   fCountries(strName, fields)
     .then(renderResult)
-    .catch(error => {
-       console.log('err', error);
-    });
+    .catch(errResult);
 }
 
 function renderResult(result) {
@@ -39,9 +40,31 @@ function renderResult(result) {
     const markup = cardCountryTpl(...result);
     refs.container.innerHTML = markup;
     return
-  } else if (result.length > 10){
+  } else if (result.length > 10) {
     refs.container.innerHTML = '';
+    const errNotify = error({
+      text: "Too many matches found. Please enter a more specific query",
+      delay: 1000,
+      addClass: 'notify-err',
+      closer: false,
+      sticker: false,
+    });
+  } else if (result.status === 404) {
+    refs.container.innerHTML = '';
+    const errNotify = error({
+      text: "Matches not found. Please enter a more specific query",
+      delay: 1000,
+      addClass: 'notify-err',
+      closer: false,
+      sticker: false,
+    });
   } else {
     refs.container.innerHTML = '';
   }
+
+}
+
+function errResult(result) {
+  refs.container.innerHTML = '';
+  console.log('err', error);
 }
