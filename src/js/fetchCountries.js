@@ -1,3 +1,4 @@
+const BASE_URL = 'https://restcountries.eu/rest/v2/name/';
 /**
  * Возвращает Promise Response - JSON, страны согласно фильтру по названию,
  * с ресурса https://restcountries.eu/rest/v2.
@@ -7,7 +8,7 @@
  * @return {object} Promise Response стран JSON.
  */
 export default function fetchCountries(name, fields = false) {
-  let url = `https://restcountries.eu/rest/v2/name/${name}`;
+  let url = BASE_URL + name;
   if (fields) {
     url += `?fields=${fields.join(';')}`
   }
